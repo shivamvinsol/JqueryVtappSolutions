@@ -1,0 +1,20 @@
+#container {
+  width: 50%;
+  display: table;
+}
+
+#stack-container {
+  border: 1px green solid;
+  display: table-cell;
+  width: 50%;
+}
+
+#button-container {
+  display: table-cell;
+}
+
+.stackItem {
+  height: 20px;
+  background-color: pink;
+  border: 1px gray solid;
+}
