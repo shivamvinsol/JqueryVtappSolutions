@@ -15,16 +15,12 @@ StackCreator.prototype.bindEvents = function() {
 
 StackCreator.prototype.bindButtonClickEvent = function() {
   var _this = this,
-    $stackItem = '';
+    $stackItem = '',
+    stackItemCount = 0;
 
   this.$addItem.on('click', function() {
-
-    if(_this.$top.length === 0) {  // top is empty
-      $stackItem = $('<div>', {'class' : 'stackItem'}).html(1);
-    } else {
-      $stackItem = $('<div>', {'class' : 'stackItem'}).html(parseInt(_this.$top.html()) + 1);
-    }
-
+    stackItemCount = _this.$stack.find('div').length;
+    $stackItem = $('<div>', {'class' : 'stackItem'}).html(stackItemCount + 1);
     _this.$stack.prepend($stackItem);
     _this.$top = $stackItem; // make it top
   });
@@ -54,7 +50,7 @@ StackCreator.prototype.deleteTopStackItem = function($stackItem) {
 
 // check if selected item is top element
 StackCreator.prototype.checkTopStackItem = function($stackItem) {
-  if ($stackItem[0] === this.$top[0]) {
+  if ($stackItem.is($(':first-child', this.$stack))) { // check if selected stack is first child of stack (top most)
     return true;
   }
   return false;
@@ -63,17 +59,17 @@ StackCreator.prototype.checkTopStackItem = function($stackItem) {
 
 // highlight stack element
 StackCreator.prototype.highlightStackItem = function($stackItem) {
-  $stackItem.css('opacity', '0.5')  // highlight the selection
-    .siblings().css('opacity', '1'); // remove highlight from others
+  $stackItem.addClass('highlight')  // highlight the selection
+    .siblings().removeClass('highlight'); // remove highlight from others
 };
 
 
 // starts----------
 $(function() {
   var options = {
-    $stack : $('#stack-container'),
-    $addItem : $('#addItem')
+    $stack : $('div[data-container="stack"]'),
+    $addItem : $('input[data-id="addItem"]')
   },
   stack = new StackCreator(options);
   stack.initialize();
-})
+});

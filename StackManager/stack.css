@@ -18,3 +18,7 @@
   background-color: pink;
   border: 1px gray solid;
 }
+
+.highlight {
+  opacity: 0.5;
+}
