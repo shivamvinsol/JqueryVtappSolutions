@@ -1,0 +1,19 @@
+div{
+  width: 350px;
+  height: 70px ;
+  border: 2px solid grey;
+  margin: auto;
+  padding: 5px;
+  position: relative;
+}
+select{
+  width: 100px;
+}
+#source{
+  position: absolute;
+  left: 50px;
+}
+#destination{
+  position: absolute;
+  right: 50px;
+}

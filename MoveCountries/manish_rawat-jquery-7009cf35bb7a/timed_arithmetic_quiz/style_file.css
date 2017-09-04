@@ -1,0 +1,58 @@
+h1{
+  text-align : center;
+}
+
+#container{
+  border : 1px solid black;
+  width : 610px;
+  height : 150px;
+  position : relative;
+  margin : auto;
+}
+
+#question{
+  border : 1px solid grey;
+  height : 100px;
+  width : 400px;
+  position : absolute;
+  left : 5px;
+  top : 5px;
+  font-weight : bold;
+  font-size : 20px;
+}
+
+#response{
+  position : absolute; 
+  left : 5px;
+  top : 120px;
+}
+
+#timer{
+  border : 1px solid grey;
+  height : 40px;
+  width : 150px;
+  position : absolute; 
+  top : 5px;
+  left : 450px;
+  font-size : 22px;
+  color : red;
+}
+
+#score{
+  border : 1px solid grey;
+  height : 40px;
+  width : 100px;
+  position : absolute; 
+  top : 65px;
+  left : 450px;
+  font-size : 20px;
+}
+
+table, th, td{
+  margin : auto;
+  border: 1px solid black;
+}
+
+.scorecard{
+  text-align : center;
+}
