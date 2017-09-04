@@ -1,0 +1,13 @@
+#main-div {
+  height: 200px;
+  width: 50%;
+  margin: 0 auto;
+}
+
+select {
+  vertical-align: top;
+  height: 170px;
+  width: 20%;
+  display: inline-block;
+  margin-left: 30px;
+}
