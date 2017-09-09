@@ -6,16 +6,6 @@ function StoreManager(options) {
   this.$filteredProducts = [];
 }
 
-// Product
-function Product(product) {
-  this.name = parseInt(product.name);
-  this.color = product.color;
-  this.brand = product.brand;
-  this.isSoldOut = product.sold_out;
-  this.imageUrl = product.url;
-  this.$productDOM = $('<img>', {src: 'images/' + this.imageUrl}).addClass('product-image'); // contains product image (DOM)
-}
-
 StoreManager.prototype.initialize = function() {
   var _this = this;
   this.getProductData().done(function() {
@@ -127,7 +117,6 @@ StoreManager.prototype.createProducts = function() {
 };
 
 StoreManager.prototype.displayProducts = function() {
-  console.log(this.$filteredProducts);
   var documentFragment = document.createDocumentFragment();
 
   $.each(this.$filteredProducts, function() {
@@ -192,7 +181,7 @@ StoreManager.prototype.checkFilter = function($filtersSelected, product, filterP
 };
 
 // ---------------------------------------------------------
-
+// EVENT HANDLING
 StoreManager.prototype.bindEvents = function() {
   this.bindChangeEvent(this.$brandFilter);
   this.bindChangeEvent(this.$colorFilter);
@@ -206,13 +195,3 @@ StoreManager.prototype.bindChangeEvent = function(filter) {
     _this.displayProducts();
   })
 };
-
-// starts  ------------------
-$(function() {
-  var options = {
-    url: 'product.json',
-    $storeContainer: $('div[data-container="product-store"]'),
-  },
-      store = new StoreManager(options);
-  store.initialize();
-});
