@@ -15,6 +15,7 @@ CountriesMover.prototype.bindEvents = function() {
 CountriesMover.prototype.bindDragEvent = function() {
   this.$countries.draggable({
     revert: true,
+    revertDuration: 0,
     drag: function(event, ui) {
       ui.helper.addClass('ui-state-highlight');
     }
