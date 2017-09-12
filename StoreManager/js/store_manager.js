@@ -64,26 +64,28 @@ StoreManager.prototype.createAvailabilityFilter = function() {
   this.$availabilityFilter = this.createFilterLayout('AVAILABILITY');
   // data----------
   var $allLabel = $('<label>', { for: 'all'}).addClass('label').html('ALL'),
-      $allOption = $('<input>', {type: 'radio', name:'availability',id: 'all', 'data-id': 'all', value: '1', checked: 'checked'}),
+      $allOption = $('<input>', {type: 'radio', name:'availability',id: 'all', 'data-name': 'filter', value: '1', checked: 'checked'}),
       $availableLabel = $('<label>', { for: 'available'}).addClass('label').html('AVAILABLE'),
-      $availableOption = $('<input>', {type: 'radio', name:'availability', id: 'available', 'data-id': 'available', value: '0'});
+      $availableOption = $('<input>', {type: 'radio', name:'availability', id: 'available', 'data-name': 'filter', value: '0'});
   // load-----------
   this.$availabilityFilter.append($allOption, $allLabel, $availableOption, $availableLabel);
 };
 
 StoreManager.prototype.createFilterLayout = function(filterName) {
-  $heading = $('<h4>').addClass('heading').html(filterName);
-  $container = $('<div>', {id: filterName.toLowerCase() + '-filter'}).append($heading);
+  var $heading = $('<h4>').addClass('heading').html(filterName),
+      $container = $('<div>', {id: filterName.toLowerCase() + '-filter'}).append($heading);
   this.$filterContainer.append($container);
   return $container;
 };
 
 StoreManager.prototype.loadFilterData = function($filterContainer, filterData) {
-  var $filterOptions = [];
+  var $filterOptions = [],
+      $filterOption = '',
+      $OptionName = '';
   filterData.sort();
   $.each(filterData, function() {
-    var $filterOption = $('<input/>',{type: 'checkbox', value: this, id: this}),
-      $OptionName = $('<label>', { for: this }).html(this).addClass('label');
+    $filterOption = $('<input/>',{type: 'checkbox', value: this, id: this, 'data-name': 'filter'}),
+    $OptionName = $('<label>', { for: this }).html(this).addClass('label');
     $filterOptions.push($filterOption, $OptionName);
   });
 
@@ -134,12 +136,12 @@ StoreManager.prototype.applyFilters = function() {
   this.$contentContainer.empty();  // clear container
   this.$filteredProducts = []; // clean filters
 
-  var filtersSelected = 'input:checked';
+  var filtersSelected = 'input:checked',
+      _this = this;
 
   this.$brandsSelected = this.$brandFilter.find(filtersSelected);
   this.$colorsSelected = this.$colorFilter.find(filtersSelected);
   this.$availability = this.$availabilityFilter.find(filtersSelected);
-  _this = this;
 
   $.each(this.$products, function() {
     // brand filter
@@ -183,15 +185,11 @@ StoreManager.prototype.checkFilter = function($filtersSelected, product, filterP
 // ---------------------------------------------------------
 // EVENT HANDLING
 StoreManager.prototype.bindEvents = function() {
-  this.bindChangeEvent(this.$brandFilter);
-  this.bindChangeEvent(this.$colorFilter);
-  this.bindChangeEvent(this.$availabilityFilter);
+  var _this = this;
+  $('[data-name="filter"]').on('change', function() { _this.handleChangeEvent(); });
 };
 
-StoreManager.prototype.bindChangeEvent = function(filter) {
-  var _this = this;
-  filter.on('change', function() {
-    _this.applyFilters();
-    _this.displayProducts();
-  })
-};
+StoreManager.prototype.handleChangeEvent = function() {
+  this.applyFilters();
+  this.displayProducts();
+}
