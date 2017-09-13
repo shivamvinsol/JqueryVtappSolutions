@@ -170,10 +170,10 @@ StoreManager.prototype.createPaginationBar = function() {
       noOfPages = Math.floor((totalProducts - 1)/ productsPerPage) + 1,
       $documentFragment = document.createDocumentFragment(),
       $page = '',
-      i = 0;
+      index = 0;
 
-  for(i = 1; i <= noOfPages; i += 1) {
-    $page = $('<div>', {id: 'page' + i, 'data-page' : i}).addClass('page').html(i);
+  for(index = 1; index <= noOfPages; index += 1) {
+    $page = $('<div>', {id: 'page' + index, 'data-page' : index}).addClass('page').html(index);
     $documentFragment.append($page[0]);
   }
 
@@ -265,9 +265,9 @@ StoreManager.prototype.bindPageClickEvent = function() {
       $this = '';
   this.$contentContainer.on('click', '[data-page]', function() {
     $this = $(this);
-     $this.addClass('highlight').siblings().removeClass('highlight');
-     _this.selectedPage = $this.html();
-     _this.applyPagination();
+    $this.addClass('highlight').siblings().removeClass('highlight');
+    _this.selectedPage = $this.data('page');
+    _this.applyPagination();
     _this.displayCurrentlyViewableProducts(); // filters remains same
   });
 };
