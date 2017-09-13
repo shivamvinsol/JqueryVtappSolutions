@@ -8,16 +8,6 @@ function StoreManager(options) {
   this.paginationOptions = [3, 6, 9];
 }
 
-// Product
-function Product(product) {
-  this.name = parseInt(product.name);
-  this.color = product.color;
-  this.brand = product.brand;
-  this.isSoldOut = product.sold_out;
-  this.imageUrl = product.url;
-  this.$productDOM = $('<img>', {src: 'images/' + this.imageUrl}).addClass('product-image'); // contains product image (DOM)
-}
-
 StoreManager.prototype.initialize = function() {
   var _this = this;
   this.getProductData().done(function() {
@@ -78,16 +68,16 @@ StoreManager.prototype.createAvailabilityFilter = function() {
   this.$availabilityFilter = this.createFilterLayout('AVAILABILITY');
   // data----------
   var $allLabel = $('<label>', { for: 'all'}).addClass('label').html('ALL'),
-      $allOption = $('<input>', {type: 'radio', name:'availability',id: 'all', 'data-id': 'all', value: '1', checked: 'checked'}),
+      $allOption = $('<input>', {type: 'radio', name:'availability',id: 'all', 'data-name': 'filter', value: '1', checked: 'checked'}),
       $availableLabel = $('<label>', { for: 'available'}).addClass('label').html('AVAILABLE'),
-      $availableOption = $('<input>', {type: 'radio', name:'availability', id: 'available', 'data-id': 'available', value: '0'});
+      $availableOption = $('<input>', {type: 'radio', name:'availability', id: 'available', 'data-name': 'filter', value: '0'});
   // load-----------
   this.$availabilityFilter.append($allOption, $allLabel, $availableOption, $availableLabel);
 };
 
 StoreManager.prototype.createPaginationFilter = function() {
   this.$paginationFilter = this.createFilterLayout('PAGINATION');
-  this.$productsPerPage = $('<select>', {id: 'productsPerPage'}).addClass('pagination');
+  this.$productsPerPage = $('<select>', {id: 'productsPerPage', 'data-name': 'filter'}).addClass('pagination');
   this.$paginationBar = $('<div>', {id: 'pagination-bar'}).addClass('pagination-bar');
   // data----------
   var $fragment = document.createDocumentFragment(),
@@ -106,13 +96,13 @@ StoreManager.prototype.createPaginationFilter = function() {
 
 StoreManager.prototype.createSortingFilter = function() {
   this.$sortingFilter = this.createFilterLayout('SORTING');
-  this.$sortBy = $('<select>', {id: 'sortBy'}).addClass('sort');
+  this.$sortBy = $('<select>', {id: 'sortBy', 'data-name': 'filter'}).addClass('sort');
 
   // data----------
-  var $sortByName = $('<option>', {value: 'name', selected: 'selected'}).html('Name'),
-      $sortByColor = $('<option>', {value: 'color'}).html('Color'),
-      $sortByBrand = $('<option>', {value: 'brand'}).html('Brand'),
-      $sortByAvailability = $('<option>', {value: 'isSoldOut'}).html('Availability');
+  var $sortByName = $('<option>', {value: 'name', selected: 'selected', 'data-sortBy': 'name' }).html('Name'),
+      $sortByColor = $('<option>', {value: 'color', 'data-sortBy': 'color'}).html('Color'),
+      $sortByBrand = $('<option>', {value: 'brand', 'data-sortBy': 'brand'}).html('Brand'),
+      $sortByAvailability = $('<option>', {value: 'isSoldOut', 'data-sortBy': 'isSoldOut'}).html('Availability');
 
   this.$sortBy.append($sortByName, $sortByBrand, $sortByColor, $sortByAvailability);
 
@@ -131,7 +121,7 @@ StoreManager.prototype.loadFilterData = function($filterContainer, filterData) {
   var $filterOptions = [];
   filterData.sort();
   $.each(filterData, function() {
-    var $filterOption = $('<input/>',{type: 'checkbox', value: this, id: this}),
+    var $filterOption = $('<input/>',{type: 'checkbox', value: this, id: this, 'data-name': 'filter'}),
       $OptionName = $('<label>', { for: this }).html(this).addClass('label');
     $filterOptions.push($filterOption, $OptionName);
   });
@@ -195,10 +185,10 @@ StoreManager.prototype.createPaginationBar = function() {
       noOfPages = Math.floor((totalProducts - 1)/ productsPerPage) + 1,
       $documentFragment = document.createDocumentFragment(),
       $page = '',
-      i = 0;
+      index = 0;
 
-  for(i = 1; i <= noOfPages; i += 1) {
-    $page = $('<div>', {id: 'page' + i, 'data-page' : i}).addClass('page').html(i);
+  for(index = 1; index <= noOfPages; index += 1) {
+    $page = $('<div>', {id: 'page' + index, 'data-page' : index}).addClass('page').html(index);
     $documentFragment.append($page[0]);
   }
 
@@ -261,7 +251,7 @@ StoreManager.prototype.checkFilter = function($filtersSelected, product, filterP
 
 
 StoreManager.prototype.applySorting = function() {
-  var sortCriteria = this.$sortBy.val()
+  var sortCriteria = this.$sortBy.val();
   this.$filteredProducts.sort(function(product1, product2) {
     if (product1[sortCriteria] > product2[sortCriteria]) {
       return 1;
@@ -288,38 +278,22 @@ StoreManager.prototype.applyPagination = function() {
 // ---------------------------------------------------------
 
 StoreManager.prototype.bindEvents = function() {
-  this.bindChangeEvent(this.$brandFilter);
-  this.bindChangeEvent(this.$colorFilter);
-  this.bindChangeEvent(this.$availabilityFilter);
-  this.bindChangeEvent(this.$paginationFilter);
-  this.bindChangeEvent(this.$sortingFilter);
+  this.bindChangeEvent();
   this.bindPageClickEvent();
 };
 
 StoreManager.prototype.bindChangeEvent = function(filter) {
   var _this = this;
-  filter.on('change', function() {
-    _this.displayProducts();
-  })
+  $('[data-name="filter"]').on('change', function() { _this.displayProducts(); });
 };
 
 StoreManager.prototype.bindPageClickEvent = function() {
   var _this = this;
   this.$contentContainer.on('click', '#pagination-bar div', function() {
     var $this = $(this);
-     $this.addClass('highlight').siblings().removeClass('highlight');
-     _this.selectedPage = $this.html();
-     _this.applyPagination();
+    $this.addClass('highlight').siblings().removeClass('highlight');
+    _this.selectedPage = $this.data('page');
+    _this.applyPagination();
     _this.displayCurrentlyViewableProducts(); // filters remains same
   });
 };
-
-// starts  ------------------
-$(function() {
-  var options = {
-    url: 'product.json',
-    $storeContainer: $('div[data-container="product-store"]'),
-  },
-      store = new StoreManager(options);
-  store.initialize();
-});

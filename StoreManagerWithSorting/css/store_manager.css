@@ -4,7 +4,7 @@ body {
 
 header {
   height: 25%;
-  background: url('images/header.png');
+  background: url('../images/header.png');
   background-repeat: no-repeat;
   background-position: center;
 }
