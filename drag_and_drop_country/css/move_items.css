@@ -17,3 +17,8 @@ ul {
   margin: 10px;
   text-align: left;
 }
+
+.highlight {
+  background-color: yellow;
+  opacity: 0.6;
+}

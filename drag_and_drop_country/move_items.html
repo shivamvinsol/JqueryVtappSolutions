@@ -2,12 +2,12 @@
 <html>
 <head>
   <title> Move countries between /ul boxes </title>
-  <link rel="stylesheet" href="css/move_countries.css" />
+  <link rel="stylesheet" href="css/move_items.css" />
   <link rel="stylesheet" href="css/jquery-ui.css" />
 </head>
 <body>
   <div id="main-div">
-    <ul id="list1" data-name="list">
+    <ul id="list1" data-name="country-list">
     	<li data-name="country">Angola</li>
     	<li data-name="country">Virgin Islands, U.S.</li>
     	<li data-name="country">Wallis and Futuna</li>
@@ -17,13 +17,26 @@
     	<li data-name="country">Zimbabwe</li>
     </ul>
 
-    <ul id="list2" data-name="list">
+    <ul id="list2" data-name="country-list">
+    </ul>
+  </div>
+
+  <div id="main-div">
+    <ul id="list3" data-name="state-list">
+    	<li data-name="state">Goa</li>
+    	<li data-name="state">Delhi</li>
+    	<li data-name="state">Punjab</li>
+    	<li data-name="state">Mumbai</li>
+    	<li data-name="state">Daman</li>
+    </ul>
+
+    <ul id="list4" data-name="state-list">
     </ul>
   </div>
 </body>
 <footer>
   <script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="js/jquery-ui-1.12.1/jquery-ui.js"></script>
-  <script type="text/javascript" src="js/move_countries.js"></script>
+  <script type="text/javascript" src="js/move_items.js"></script>
 </footer>
 </html>
