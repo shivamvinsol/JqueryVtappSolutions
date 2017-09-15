@@ -2,17 +2,8 @@ function ItemMover(options) {
   this.$list = options.$lists;
   this.$items = options.$items;
   this.scope = options.scope;
-  this.getDefaultClass(options.class);
+  this.defaultClass = options.class || 'ui-state-highlight';
 }
-
-ItemMover.prototype.getDefaultClass = function(className) {
-  // no class given
-  if (className === undefined) {
-    this.defaultClass = 'ui-state-highlight';
-  } else {
-    this.defaultClass = className; // custom class given
-  }
-};
 
 ItemMover.prototype.initialize = function() {
   this.bindEvents();
