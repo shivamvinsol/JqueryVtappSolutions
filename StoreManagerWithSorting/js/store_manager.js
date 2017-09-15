@@ -111,8 +111,8 @@ StoreManager.prototype.createSortingFilter = function() {
 };
 
 StoreManager.prototype.createFilterLayout = function(filterName) {
-  $heading = $('<h4>').addClass('heading').html(filterName);
-  $container = $('<div>', {id: filterName.toLowerCase() + '-filter'}).append($heading);
+  var $heading = $('<h4>').addClass('heading').html(filterName);
+      $container = $('<div>', {id: filterName.toLowerCase() + '-filter'}).append($heading);
   this.$filterContainer.append($container);
   return $container;
 };
@@ -122,7 +122,7 @@ StoreManager.prototype.loadFilterData = function($filterContainer, filterData) {
   filterData.sort();
   $.each(filterData, function() {
     var $filterOption = $('<input/>',{type: 'checkbox', value: this, id: this, 'data-name': 'filter'}),
-      $OptionName = $('<label>', { for: this }).html(this).addClass('label');
+        $OptionName = $('<label>', { for: this }).html(this).addClass('label');
     $filterOptions.push($filterOption, $OptionName);
   });
 
