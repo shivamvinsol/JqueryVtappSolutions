@@ -111,19 +111,21 @@ StoreManager.prototype.createSortingFilter = function() {
 };
 
 StoreManager.prototype.createFilterLayout = function(filterName) {
-  var $heading = $('<h4>').addClass('heading').html(filterName);
+  var $heading = $('<h4>').addClass('heading').html(filterName),
       $container = $('<div>', {id: filterName.toLowerCase() + '-filter'}).append($heading);
   this.$filterContainer.append($container);
   return $container;
 };
 
 StoreManager.prototype.loadFilterData = function($filterContainer, filterData) {
-  var $filterOptions = [];
+  var $filterOptions = [],
+      $filterName = '',
+      $optionName = '';
   filterData.sort();
   $.each(filterData, function() {
-    var $filterOption = $('<input/>',{type: 'checkbox', value: this, id: this, 'data-name': 'filter'}),
-        $OptionName = $('<label>', { for: this }).html(this).addClass('label');
-    $filterOptions.push($filterOption, $OptionName);
+    $filterOption = $('<input/>',{type: 'checkbox', value: this, id: this, 'data-name': 'filter'}),
+    $optionName = $('<label>', { for: this }).html(this).addClass('label');
+    $filterOptions.push($filterOption, $optionName);
   });
 
   $filterContainer.append($filterOptions);
@@ -203,12 +205,12 @@ StoreManager.prototype.applyFilters = function() {
   this.$contentContainer.empty();  // clear container
   this.$filteredProducts = []; // empty previous filtered products
 
-  var filtersSelected = 'input:checked';
+  var filtersSelected = 'input:checked',
+      _this = this;
 
   this.$brandsSelected = this.$brandFilter.find(filtersSelected);
   this.$colorsSelected = this.$colorFilter.find(filtersSelected);
   this.$availability = this.$availabilityFilter.find(filtersSelected);
-  _this = this;
 
   $.each(this.$products, function() {
     // brand filter
@@ -288,9 +290,10 @@ StoreManager.prototype.bindChangeEvent = function(filter) {
 };
 
 StoreManager.prototype.bindPageClickEvent = function() {
-  var _this = this;
+  var _this = this,
+      $this = '';
   this.$contentContainer.on('click', '#pagination-bar div', function() {
-    var $this = $(this);
+    $this = $(this);
     $this.addClass('highlight').siblings().removeClass('highlight');
     _this.selectedPage = $this.data('page');
     _this.applyPagination();
