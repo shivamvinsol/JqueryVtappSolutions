@@ -86,7 +86,7 @@ StoreManager.prototype.checkCurrentSelectionURL = function() {
       this.checkSelectedPagination(selectedfilters[3]);
       this.checkSelectedSortOption(selectedfilters[4]);
       this.displayProducts(); // applies all filters
-      this.checkSelectedPage(selectedfilters[5]); // if I do this before displaying products, I get old values of filters
+      this.checkSelectedPage(selectedfilters[5]); //should be done at last, to get latest page
     } else {
         location.replace(location.origin + location.pathname); // incorrect format, redirect to home page
     }
@@ -104,7 +104,7 @@ StoreManager.prototype.checkSelectedFilters = function(filterContainer, filter){
     $.each(filterContainer.find('input'), function() {
       isChecked = parseInt(filter[index]);
       this.checked = isChecked;
-      i++;
+      index++;
     });
   }
 };
