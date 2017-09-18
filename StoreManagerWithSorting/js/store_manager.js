@@ -2,10 +2,12 @@
 function StoreManager(options) {
   this.url = options.url;
   this.$container = options.$storeContainer;
+  this.paginationOptions = options.paginationOptions;
+  this.sortingOptions = options.sortingOptions;
+  this.filterSelector = options.filterSelector;
   this.$products = [];
   this.$filteredProducts = [];
   this.$currentlyViewableProducts = [];
-  this.paginationOptions = [3, 6, 9];
 }
 
 StoreManager.prototype.initialize = function() {
@@ -99,12 +101,15 @@ StoreManager.prototype.createSortingFilter = function() {
   this.$sortBy = $('<select>', {id: 'sortBy', 'data-name': 'filter'}).addClass('sort');
 
   // data----------
-  var $sortByName = $('<option>', {value: 'name', selected: 'selected', 'data-sortBy': 'name' }).html('Name'),
-      $sortByColor = $('<option>', {value: 'color', 'data-sortBy': 'color'}).html('Color'),
-      $sortByBrand = $('<option>', {value: 'brand', 'data-sortBy': 'brand'}).html('Brand'),
-      $sortByAvailability = $('<option>', {value: 'isSoldOut', 'data-sortBy': 'isSoldOut'}).html('Availability');
+  var $fragment = document.createDocumentFragment(),
+      $filterOption = '';
 
-  this.$sortBy.append($sortByName, $sortByBrand, $sortByColor, $sortByAvailability);
+  $.each(this.sortingOptions, function() {
+    $filterOption = $('<option>', {value: this[0]}).html(this[1]);
+    $fragment.append($filterOption[0]);
+  });
+
+  this.$sortBy.append($fragment);
 
   // load-----------
   this.$sortingFilter.append(this.$sortBy);
@@ -286,7 +291,9 @@ StoreManager.prototype.bindEvents = function() {
 
 StoreManager.prototype.bindChangeEvent = function(filter) {
   var _this = this;
-  $('[data-name="filter"]').on('change', function() { _this.displayProducts(); });
+  this.$filterContainer.on('change', this.filterSelector, function() {
+    _this.displayProducts();
+  });
 };
 
 StoreManager.prototype.bindPageClickEvent = function() {
