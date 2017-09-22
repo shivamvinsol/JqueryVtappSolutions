@@ -398,10 +398,10 @@ StoreManager.prototype.applyPagination = function() {
 
 StoreManager.prototype.bindEvents = function() {
   // change in any filter
-  this.$filterContainer.on('change', this.filterSelector,  this.handleChangeEvent() );
+  this.$filterContainer.on('change', this.filterSelector,  this.handleChangeEvent());
 
   // click on pagination bar to change page
-  this.$contentContainer.on('click', this.pageSelector, this.handlePageClickEvent() );
+  this.$contentContainer.on('click', this.pageSelector, this.handlePageClickEvent());
 };
 
 StoreManager.prototype.handleChangeEvent = function() {
