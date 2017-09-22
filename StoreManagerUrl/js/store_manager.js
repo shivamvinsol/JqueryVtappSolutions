@@ -5,13 +5,17 @@ function StoreManager(options) {
   this.paginationOptions = options.paginationOptions;
   this.sortingOptions = options.sortingOptions;
   this.filterSelector = options.filterSelector;
-  this.$products = [];
-  this.$filteredProducts = [];
-  this.$currentlyViewableProducts = [];
+  this.pageSelector = options.pageSelector;
 }
+
+StoreManager.prototype.selectedFiltersRegex = /^\?brands=((0|1)+)&colors=((0|1)+)&availability=(0|1)&productsPerPage=(\d+)&sortingCriteria=(\w+)&page=(\d+)$/;
 
 StoreManager.prototype.initialize = function() {
   var _this = this;
+  this.$products = [];
+  this.$filteredProducts = [];
+  this.$currentlyViewableProducts = [];
+
   this.getProductData().done(function() {
     _this.createFilters();
     _this.createContentDisplayArea();
@@ -51,6 +55,7 @@ StoreManager.prototype.createCurrentSelectionURL = function() {
     productsPerPage: this.$productsPerPage.val(),
     sortingCriteria: this.$sortBy.val()
   };
+
   // changes URL without loading the page
   history.pushState(this.selectedOptions, "SHOP", '?' + jQuery.param(this.selectedOptions) + '&page=' + this.selectedPage);
 };
@@ -70,28 +75,26 @@ StoreManager.prototype.getCode = function(filter) {
 
 StoreManager.prototype.checkCurrentSelectionURL = function() {
   if(location.search) {
-    var selectedFiltersRegex = /^\?brands=((0|1)+)&colors=((0|1)+)&availability=(0|1)&productsPerPage=(\d+)&sortingCriteria=(\w+)&page=(\d+)$/,
-        selectedfilters = '';
+    var selectedFilters = '';
 
-    if(selectedFiltersRegex.test(location.search)) {
-
+    if(this.selectedFiltersRegex.test(location.search)) {
       // returns values of filters selected
-      selectedfilters = $.map(location.search.slice(1).split('&'), function(filter) {
+      selectedFilters = $.map(location.search.slice(1).split('&'), function(filter) {
         return filter.split('=')[1];
       });
 
-      this.checkSelectedFilters(this.$brandFilter, selectedfilters[0]);
-      this.checkSelectedFilters(this.$colorFilter, selectedfilters[1]);
-      this.checkSelectedAvailability(selectedfilters[2]);
-      this.checkSelectedPagination(selectedfilters[3]);
-      this.checkSelectedSortOption(selectedfilters[4]);
+      this.checkSelectedFilters(this.$brandFilter, selectedFilters[0]);
+      this.checkSelectedFilters(this.$colorFilter, selectedFilters[1]);
+      this.checkSelectedAvailability(selectedFilters[2]);
+      this.checkSelectedPagination(selectedFilters[3]);
+      this.checkSelectedSortOption(selectedFilters[4]);
       this.displayProducts(); // applies all filters
-      this.checkSelectedPage(selectedfilters[5]); //should be done at last, to get latest page
+      this.checkSelectedPage(selectedFilters[5]); //should be done at last, to get latest page
     } else {
-        location.replace(location.origin + location.pathname); // incorrect format, redirect to home page
+      location.replace(location.origin + location.pathname); // incorrect format, redirect to home page
     }
   } else {
-      console.log("no filters present");
+    console.log("no filters present");
   }
 };
 
@@ -169,23 +172,27 @@ StoreManager.prototype.createColorFilter = function() {
 };
 
 StoreManager.prototype.createAvailabilityFilter = function() {
-  this.$availabilityFilter = this.createFilterLayout('AVAILABILITY');
+
   // data----------
   var $allLabel = $('<label>', { for: 'all'}).addClass('label').html('ALL'),
       $allOption = $('<input>', {type: 'radio', name:'availability',id: 'all', 'data-id': 'all', 'data-name': 'filter', value: '1', checked: 'checked'}),
       $availableLabel = $('<label>', { for: 'available'}).addClass('label').html('AVAILABLE'),
       $availableOption = $('<input>', {type: 'radio', name:'availability', id: 'available', 'data-id': 'available', 'data-name': 'filter', value: '0'});
+
+  this.$availabilityFilter = this.createFilterLayout('AVAILABILITY');
+
   // load-----------
   this.$availabilityFilter.append($allOption, $allLabel, $availableOption, $availableLabel);
 };
 
 StoreManager.prototype.createPaginationFilter = function() {
+  var $fragment = document.createDocumentFragment(),
+      $pageOption = '';
+
   this.$paginationFilter = this.createFilterLayout('PAGINATION');
   this.$productsPerPage = $('<select>', {id: 'productsPerPage', 'data-name': 'filter'}).addClass('pagination');
   this.$paginationBar = $('<div>', {id: 'pagination-bar'}).addClass('pagination-bar');
   // data----------
-  var $fragment = document.createDocumentFragment(),
-      $pageOption = '';
 
   $.each(this.paginationOptions, function() {
     $pageOption = $('<option>', {value: this}).html(this);
@@ -199,19 +206,20 @@ StoreManager.prototype.createPaginationFilter = function() {
 };
 
 StoreManager.prototype.createSortingFilter = function() {
+  var $fragment = document.createDocumentFragment(),
+      $filterOption = '';
+
   this.$sortingFilter = this.createFilterLayout('SORTING');
   this.$sortBy = $('<select>', {id: 'sortBy', 'data-name': 'filter'}).addClass('sort');
 
   // data----------
-  var $fragment = document.createDocumentFragment(),
-      $filterOption = '';
-
   $.each(this.sortingOptions, function() {
     $filterOption = $('<option>', {value: this[0]}).html(this[1]);
     $fragment.append($filterOption[0]);
   });
 
   this.$sortBy.append($fragment);
+
   // load-----------
   this.$sortingFilter.append(this.$sortBy);
 };
@@ -219,7 +227,9 @@ StoreManager.prototype.createSortingFilter = function() {
 StoreManager.prototype.createFilterLayout = function(filterName) {
   var $heading = $('<h4>').addClass('heading').html(filterName),
       $container = $('<div>', {id: filterName.toLowerCase() + '-filter'}).append($heading);
+
   this.$filterContainer.append($container);
+
   return $container;
 };
 
@@ -227,7 +237,9 @@ StoreManager.prototype.loadFilterData = function($filterContainer, filterData) {
   var $filterOptions = [],
       $filterOption = '',
       $optionName = '';
+
   filterData.sort();
+
   $.each(filterData, function() {
     $filterOption = $('<input/>',{type: 'checkbox', value: this, id: this, 'data-name': 'filter'}),
     $optionName = $('<label>', { for: this }).html(this).addClass('label');
@@ -283,17 +295,17 @@ StoreManager.prototype.displayCurrentlyViewableProducts = function() {
 
   this.$contentContainer.empty();
   this.$contentContainer.append(documentFragment, this.$paginationBar);
-
 };
 
 StoreManager.prototype.createPaginationBar = function() {
-  this.$paginationBar.empty();
   var totalProducts = this.$filteredProducts.length,
       productsPerPage = this.$productsPerPage.val(),
       noOfPages = Math.floor((totalProducts - 1)/ productsPerPage) + 1,
       $documentFragment = document.createDocumentFragment(),
       $page = '',
       index = 0;
+
+  this.$paginationBar.empty();
 
   for(index = 1; index <= noOfPages; index += 1) {
     $page = $('<div>', {id: 'page' + index, 'data-page' : index}).addClass('page').html(index);
@@ -302,17 +314,16 @@ StoreManager.prototype.createPaginationBar = function() {
 
   this.$paginationBar.append($documentFragment);
   this.$contentContainer.append(this.$paginationBar);
-
 };
 
 // ------------------------------------------
 
 StoreManager.prototype.applyFilters = function() {
+  var filtersSelected = 'input:checked',
+  _this = this;
+
   this.$contentContainer.empty();  // clear container
   this.$filteredProducts = []; // empty previous filtered products
-
-  var filtersSelected = 'input:checked',
-      _this = this;
 
   this.$brandsSelected = this.$brandFilter.find(filtersSelected);
   this.$colorsSelected = this.$colorFilter.find(filtersSelected);
@@ -339,9 +350,9 @@ StoreManager.prototype.applyFilters = function() {
 };
 
 StoreManager.prototype.checkFilter = function($filtersSelected, product, filterProperty) {
+  var matchesFilter = false;
 
   if($filtersSelected.length !== 0) {
-    var matchesFilter = false;
     $.each($filtersSelected, function() {
       if (this.value == product[filterProperty]) {
         matchesFilter = true;
@@ -359,7 +370,7 @@ StoreManager.prototype.checkFilter = function($filtersSelected, product, filterP
 
 
 StoreManager.prototype.applySorting = function() {
-  var sortCriteria = this.$sortBy.val()
+  var sortCriteria = this.$sortBy.val();
   this.$filteredProducts.sort(function(product1, product2) {
     if (product1[sortCriteria] > product2[sortCriteria]) {
       return 1;
@@ -386,26 +397,30 @@ StoreManager.prototype.applyPagination = function() {
 // ---------------------------------------------------------
 
 StoreManager.prototype.bindEvents = function() {
-  this.bindChangeEvent();
-  this.bindPageClickEvent();
+  // change in any filter
+  this.$filterContainer.on('change', this.filterSelector,  this.handleChangeEvent() );
+
+  // click on pagination bar to change page
+  this.$contentContainer.on('click', this.pageSelector, this.handlePageClickEvent() );
 };
 
-StoreManager.prototype.bindChangeEvent = function(filter) {
+StoreManager.prototype.handleChangeEvent = function() {
   var _this = this;
-    this.$filterContainer.on('change', this.filterSelector, function() {
-      _this.displayProducts();
-    });
+  return function() {
+    _this.displayProducts();
+    _this.createCurrentSelectionURL();
+  };
 };
 
-StoreManager.prototype.bindPageClickEvent = function() {
+StoreManager.prototype.handlePageClickEvent = function() {
   var _this = this,
       $this = '';
-  this.$contentContainer.on('click', '#pagination-bar div', function() {
+  return function() {
     $this = $(this);
     $this.addClass('highlight').siblings().removeClass('highlight');
     _this.selectedPage = $this.data('page');
     _this.applyPagination();
     _this.displayCurrentlyViewableProducts(); // filters remains same
     _this.createCurrentSelectionURL();
-  });
+  };
 };

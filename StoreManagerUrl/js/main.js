@@ -5,6 +5,7 @@ $(function() {
     paginationOptions: [3, 6, 9],
     sortingOptions: [['name', 'Name'], ['color', 'Color'], ['brand', 'Brand'], ['isSoldOut', 'Availability']],
     filterSelector: '[data-name="filter"]',
+    pageSelector: '#pagination-bar div'
   },
       store = new StoreManager(options);
   store.initialize();
